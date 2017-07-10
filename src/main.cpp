@@ -7,7 +7,7 @@
 #include <zlib.h>
 #include <jpeglib.h>
 #include <vector>
-#include "screenshot.cpp"
+#include "screenshot.h"
 using namespace std;
 
 
@@ -43,7 +43,7 @@ int main() {
     );
 
     X11Screenshot screenshot = X11Screenshot(image);
-    if (screenshot.save_to_jpeg("test.jpg"))
+    if (screenshot.save_to_jpeg("test.jpg", 30))
         cout << "saved jpeg" << endl;
     if (screenshot.save_to_png("test.png"))
         cout << "saved png" << endl;

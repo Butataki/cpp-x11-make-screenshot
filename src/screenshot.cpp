@@ -111,7 +111,7 @@ bool X11Screenshot::save_to_png(const char * path) {
     return true;
 };
 
-bool X11Screenshot::save_to_jpeg(const char * path, int quality = 30){
+bool X11Screenshot::save_to_jpeg(const char * path, int quality){
     FILE *fp = NULL;
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
