@@ -9,7 +9,7 @@ using namespace std;
 
 class X11Screenshot {
     public:
-        X11Screenshot(XImage * image);
+        X11Screenshot(XImage * image, int new_width=0, int new_height=0, string downscale_type="lineral");
         bool save_to_png(const char * path);
         bool save_to_jpeg(const char * path, int quality);
         int get_width(void);
@@ -18,8 +18,10 @@ class X11Screenshot {
     private:
         int width = 0;
         int height = 0;
-        vector<vector<unsigned char>> image_data;
-        vector<vector<unsigned char>> process_rgb_image(XImage * image);
+        vector<vector<unsigned char>> image_data = vector<vector<unsigned char>>();
+        vector<vector<unsigned char>> process_original(XImage * image);
+        vector<vector<unsigned char>> process_downscale_lineral(XImage * image, int new_width=0, int new_height=0);
+        vector<vector<unsigned char>> process_downscale_bilineral(XImage * image, int new_width=0, int new_height=0);
 };
 
 #endif
