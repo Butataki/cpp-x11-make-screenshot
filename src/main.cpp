@@ -43,10 +43,16 @@ int main() {
     );
 
     X11Screenshot screenshot = X11Screenshot(image);
+    cout << "x11 init" << endl;
     if (screenshot.save_to_jpeg("test.jpg", 30))
         cout << "saved jpeg" << endl;
     if (screenshot.save_to_png("test.png"))
         cout << "saved png" << endl;
+    X11Screenshot thumbnail = X11Screenshot(image, 1920, 540);
+    if (thumbnail.save_to_jpeg("thumb_test.jpg", 30))
+        cout << "saved thumbnail jpeg" << endl;
+    if (thumbnail.save_to_png("thumb_test.png"))
+        cout << "saved thumbnail png" << endl;
     XDestroyImage(image);
     XCloseDisplay(display);
     return 0;
