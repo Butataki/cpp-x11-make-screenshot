@@ -2,16 +2,22 @@
 #include <cstdlib>
 #include <png.h>
 #include <jpeglib.h>
+#include <stdexcept>
 #include "screenshot.h"
 using namespace std;
 
-X11Screenshot::X11Screenshot(XImage * image) {
+X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, string downscale_type) {
     this->width = image->width;
     this->height = image->height;
-    this->image_data = this->process_rgb_image(image);
+    if ((new_width == 0 && new_height == 0) ||(new_width == this->width && new_height == this->height))
+        this->image_data = this->process_original(image);
+    else if (new_width < this->width && new_height < this->height && downscale_type == "lineral")
+        this->image_data = this->process_downscale_lineral(image, new_width, new_height);
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_rgb_image(XImage * image) {
+
+
+vector<vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
     vector<vector<unsigned char>> image_data;
     vector<unsigned char> image_data_row;
     unsigned long red_mask = image->red_mask;
@@ -34,6 +40,36 @@ vector<vector<unsigned char>> X11Screenshot::process_rgb_image(XImage * image) {
         image_data_row.clear();
     }
 
+    return image_data;
+};
+
+vector<vector<unsigned char>> X11Screenshot::process_downscale_lineral(XImage * image, int new_width, int new_height){
+    vector<vector<unsigned char>> image_data;
+    vector<unsigned char> image_data_row;
+    unsigned long red_mask = image->red_mask;
+    unsigned long green_mask = image->green_mask;
+    unsigned long blue_mask = image->blue_mask;
+    float x_ratio = ((float) (this->width))/new_width;
+    float y_ratio = ((float) (this->height))/new_height;
+
+    for (int new_y=0; new_y < new_height; new_y++) {
+        for (int new_x=0; new_x < new_width; new_x++) {
+            unsigned long pixel = XGetPixel(image, (int) new_x * x_ratio, (int) new_y * y_ratio);
+
+            unsigned char blue = pixel & blue_mask;
+            unsigned char green = (pixel & green_mask) >> 8;
+            unsigned char red = (pixel & red_mask) >> 16;
+
+            image_data_row.push_back(red);
+            image_data_row.push_back(green);
+            image_data_row.push_back(blue);
+        }
+        image_data.push_back(image_data_row);
+        image_data_row.clear();
+    }
+
+    this->width = new_width;
+    this->height = new_height;
     return image_data;
 };
 
