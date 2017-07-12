@@ -11,10 +11,10 @@ X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, stri
     this->height = image->height;
     if ((new_width == 0 && new_height == 0) ||(new_width == this->width && new_height == this->height))
         this->image_data = this->process_original(image);
-    else if (scale_type == "lineral")
-        this->image_data = this->process_scale_lineral(image, new_width, new_height);
-    else if (scale_type == "bilineral")
-        this->image_data = this->process_scale_bilineral(image, new_width, new_height);
+    else if (scale_type == "linear")
+        this->image_data = this->process_scale_linear(image, new_width, new_height);
+    else if (scale_type == "bilinear")
+        this->image_data = this->process_scale_bilinear(image, new_width, new_height);
     else
         throw invalid_argument("Invalid initialisation parameters.");
 };
@@ -47,7 +47,7 @@ vector<vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
     return image_data;
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_scale_lineral(XImage * image, int new_width, int new_height){
+vector<vector<unsigned char>> X11Screenshot::process_scale_linear(XImage * image, int new_width, int new_height){
     vector<vector<unsigned char>> image_data;
     vector<unsigned char> image_data_row;
     unsigned long red_mask = image->red_mask;
@@ -71,13 +71,13 @@ vector<vector<unsigned char>> X11Screenshot::process_scale_lineral(XImage * imag
         image_data.push_back(image_data_row);
         image_data_row.clear();
     }
-
+    // update width and height after resize
     this->width = new_width;
     this->height = new_height;
     return image_data;
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_scale_bilineral(XImage * image, int new_width, int new_height){
+vector<vector<unsigned char>> X11Screenshot::process_scale_bilinear(XImage * image, int new_width, int new_height){
     vector<vector<unsigned char>> image_data;
     vector<unsigned char> image_data_row;
     float x_ratio = ((float) (this->width))/new_width;
@@ -89,7 +89,9 @@ vector<vector<unsigned char>> X11Screenshot::process_scale_bilineral(XImage * im
     for (int new_y=0; new_y < new_height; new_y++) {
         for (int new_x=0; new_x < new_width; new_x++) {
 
-
+            // x1, y1 is coordinates original pixel to take from original image
+            // x2 is step to the right
+            //y2 is step down
             int x_1 =  new_x * x_ratio;
             if (x_1 >= this->width) x_1 = this->width - 1; //becouse start pint is 0 and final is 1 less
             int y_1 =  new_y * y_ratio;
@@ -101,6 +103,7 @@ vector<vector<unsigned char>> X11Screenshot::process_scale_bilineral(XImage * im
             float x_diff = (x_ratio * new_x) - x_1 ;
             float y_diff = (y_ratio * new_y) - y_1 ;
 
+            // 4 point for bilineral function
             unsigned long q_1_1 = XGetPixel(image, x_1, y_1);
             unsigned long q_1_2 = XGetPixel(image, x_1, y_2);
             unsigned long q_2_1 = XGetPixel(image, x_2, y_1);
@@ -127,7 +130,7 @@ vector<vector<unsigned char>> X11Screenshot::process_scale_bilineral(XImage * im
         image_data.push_back(image_data_row);
         image_data_row.clear();
     }
-
+    // update width and height after resize
     this->width = new_width;
     this->height = new_height;
     return image_data;
