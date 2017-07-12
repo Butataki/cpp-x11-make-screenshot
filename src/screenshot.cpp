@@ -6,13 +6,17 @@
 #include "screenshot.h"
 using namespace std;
 
-X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, string downscale_type) {
+X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, string scale_type) {
     this->width = image->width;
     this->height = image->height;
     if ((new_width == 0 && new_height == 0) ||(new_width == this->width && new_height == this->height))
         this->image_data = this->process_original(image);
-    else if (new_width < this->width && new_height < this->height && downscale_type == "lineral")
-        this->image_data = this->process_downscale_lineral(image, new_width, new_height);
+    else if (scale_type == "lineral")
+        this->image_data = this->process_scale_lineral(image, new_width, new_height);
+    else if (scale_type == "bilineral")
+        this->image_data = this->process_scale_bilineral(image, new_width, new_height);
+    else
+        throw invalid_argument("Invalid initialisation parameters.");
 };
 
 
@@ -43,7 +47,7 @@ vector<vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
     return image_data;
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_downscale_lineral(XImage * image, int new_width, int new_height){
+vector<vector<unsigned char>> X11Screenshot::process_scale_lineral(XImage * image, int new_width, int new_height){
     vector<vector<unsigned char>> image_data;
     vector<unsigned char> image_data_row;
     unsigned long red_mask = image->red_mask;
@@ -63,6 +67,62 @@ vector<vector<unsigned char>> X11Screenshot::process_downscale_lineral(XImage * 
             image_data_row.push_back(red);
             image_data_row.push_back(green);
             image_data_row.push_back(blue);
+        }
+        image_data.push_back(image_data_row);
+        image_data_row.clear();
+    }
+
+    this->width = new_width;
+    this->height = new_height;
+    return image_data;
+};
+
+vector<vector<unsigned char>> X11Screenshot::process_scale_bilineral(XImage * image, int new_width, int new_height){
+    vector<vector<unsigned char>> image_data;
+    vector<unsigned char> image_data_row;
+    float x_ratio = ((float) (this->width))/new_width;
+    float y_ratio = ((float) (this->height))/new_height;
+    unsigned long red_mask = image->red_mask;
+    unsigned long green_mask = image->green_mask;
+    unsigned long blue_mask = image->blue_mask;
+
+    for (int new_y=0; new_y < new_height; new_y++) {
+        for (int new_x=0; new_x < new_width; new_x++) {
+
+
+            int x_1 =  new_x * x_ratio;
+            if (x_1 >= this->width) x_1 = this->width - 1; //becouse start pint is 0 and final is 1 less
+            int y_1 =  new_y * y_ratio;
+            if(y_1 >= this->height) y_1 = this->height - 1; //becouse start pint is 0 and final is 1 less
+            int x_2 = x_1 + x_ratio;
+            if (x_2 >= this->width) x_2 = this->width - 1;
+            int y_2 = y_1 + y_ratio;
+            if(y_2 >= this->height) y_2 = this->height - 1;
+            float x_diff = (x_ratio * new_x) - x_1 ;
+            float y_diff = (y_ratio * new_y) - y_1 ;
+
+            unsigned long q_1_1 = XGetPixel(image, x_1, y_1);
+            unsigned long q_1_2 = XGetPixel(image, x_1, y_2);
+            unsigned long q_2_1 = XGetPixel(image, x_2, y_1);
+            unsigned long q_2_2 = XGetPixel(image, x_2, y_2);
+            // blue element
+            // Yb = Ab(1-w1)(1-h1) + Bb(w1)(1-h1) + Cb(h1)(1-w1) + Db(wh)
+            float blue = (q_1_1 & blue_mask) * (1 - x_diff) * (1 - y_diff) + (q_1_2 & blue_mask) * (x_diff) * (1 - y_diff) +
+                (q_2_1 & blue_mask) * (y_diff) * (1 - x_diff) + (q_2_2 & blue_mask) * (x_diff * y_diff);
+
+            // green element
+            // Yg = Ag(1-w1)(1-h1) + Bg(w1)(1-h1) + Cg(h1)(1-w1) + Dg(wh)
+            float green = ((q_1_1 & green_mask) >> 8) * (1-x_diff) * (1-y_diff) + ((q_1_2 & green_mask) >> 8) * (x_diff) * (1 - y_diff) +
+                ((q_2_1 & green_mask) >> 8) * (y_diff) * (1-x_diff) + ((q_2_2 & green_mask) >> 8) * (x_diff * y_diff);
+
+            // red element
+            // Yr = Ar(1-w1)(1-h1) + Br(w1)(1-h1) + Cr(h1)(1-w1) + Dr(wh)
+            float red = ((q_1_1 & red_mask) >> 16) * (1 - x_diff) * (1 - y_diff) + ((q_1_2 & red_mask) >> 16) * (x_diff) * (1 - y_diff) +
+                ((q_2_1 & red_mask) >> 16) * (y_diff) * (1 - x_diff) + ((q_2_2 & red_mask) >> 16) * (x_diff * y_diff);
+
+            image_data_row.push_back((int) red);
+            image_data_row.push_back((int) green);
+            image_data_row.push_back((int )blue);
         }
         image_data.push_back(image_data_row);
         image_data_row.clear();
