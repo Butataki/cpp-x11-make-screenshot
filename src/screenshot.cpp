@@ -19,8 +19,6 @@ X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, stri
         throw invalid_argument("Invalid initialisation parameters.");
 };
 
-
-
 vector<vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
     vector<vector<unsigned char>> image_data;
     vector<unsigned char> image_data_row;
@@ -196,6 +194,7 @@ bool X11Screenshot::save_to_png(const char * path) {
     // write info header
     png_write_info(png_ptr, info_ptr);
     for(std::vector<vector<unsigned char>>::size_type i = 0; i != this->image_data.size(); i++) {
+        // build character row from array of characters
         row = (png_bytep) reinterpret_cast<unsigned char*>(this->image_data[i].data());
         // write byterow
         png_write_row(png_ptr, row);
@@ -238,5 +237,6 @@ bool X11Screenshot::save_to_jpeg(const char * path, int quality){
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
     if (fp != NULL) fclose(fp);
+
     return true;
 };
