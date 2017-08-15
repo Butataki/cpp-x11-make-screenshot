@@ -14,6 +14,7 @@ using namespace std;
 */
 class X11Screenshot {
     public:
+        X11Screenshot();
         /**
         A constructror. Construct a X11Screenshot object.
         @param image a XImage pointer - image to process
