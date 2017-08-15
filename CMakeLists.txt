@@ -13,4 +13,6 @@ add_executable(makeshot src/main.cpp)
 target_link_libraries(makeshot X11 x11screenshot)
 set_property(TARGET makeshot PROPERTY CXX_STANDARD 11)
 
-install(TARGETS x11screenshot DESTINATION /usr/lib)
+# install(TARGETS x11screenshot DESTINATION /usr/lib)
+# install(FILES screenshot.h DESTINATION include)
+install(TARGETS makeshot DESTINATION bin)
