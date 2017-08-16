@@ -6,9 +6,7 @@
 #include "screenshot.h"
 using namespace std;
 
-X11Screenshot::X11Screenshot() {
-
-};
+X11Screenshot::X11Screenshot() {};
 
 X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, string scale_type) {
     this->width = image->width;
