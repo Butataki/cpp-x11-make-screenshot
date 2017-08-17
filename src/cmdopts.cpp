@@ -6,7 +6,22 @@
 using namespace std;
 
 void print_help() {
-    printf("help message\n");
+    fprintf(
+        stdout,
+        "Usage: makeshot [OPTIONS]... FILE\n"
+        "Take screenshot of a screen and save it to the designated file. Supported \"jpg\" or \"png\" files. \n"
+        "\n"
+        "Mandatory arguments to long options are mandatory for short options too.\n"
+        "\n"
+        "  -w, --width=NUMBER\tscale screenshot to this width\n"
+        "  -h, --height=NUMBER\tscale screenshot to this height\n"
+        "  -q, --quality=NUMBER\tfor jpeg image only, set quality for jpeg lib processing, maximum is 100 minimum value is 1\n"
+        "      --verbose\t\tverbose output\n"
+        "  -?, --help\t\tprint this message\n"
+        "      --version\t\tprint version number\n"
+        "\n"
+        "NUMBER is a positive integer.\n"
+    );
 };
 
 vector<string> process_opt_equal_sign(string arg) {
@@ -44,12 +59,11 @@ cmd_options process_options(int argc, char ** argv) {
     //
     int i;
     for (i=1; i<argc; i++) {
-        cout << "argc " << i << " argv " << argv[i] << endl;
         string sArgValue = string(argv[i]);
         vector<string> opt = process_opt_equal_sign(sArgValue);
         // check special commands first
         if (check_opt("", "--version", opt[0])) {
-            cout << "makeshot version is " << VERSION << endl;
+            cout << "makeshot version " << VERSION << endl;
             exit(0);
         }
         if (check_opt("-?", "--help", opt[0])) {
@@ -87,7 +101,7 @@ cmd_options process_options(int argc, char ** argv) {
             continue;
         }
         // positional param
-        if (i == 1) {
+        if (i == argc - 1) {
             // pick positional argument `path` to where save screenshot
             const char * path = argv[i];
             // if path empty show help message
