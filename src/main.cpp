@@ -65,8 +65,8 @@ int main(int argc, char ** argv) {
         ZPixmap
     );
 
-    if (!(opts.path and opts.type)) {
-        print_help();
+    if (string(opts.path).length() == 0 or (string(opts.type) == "jpg" or string(opts.type) == "png")) {
+        cerr << "Invalid arguments, use --help to see details." << endl;
         exit(0);
     };
 
