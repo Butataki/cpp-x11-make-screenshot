@@ -1,9 +1,37 @@
 # cpp-c11-make-screenshot
 Capture screen image with X11 and save it to jpg or png file
+Includes library to e in project and standalone executable
 
-### Simple Usage
+### Makeshot installation
+
+Build DAB package and install
+
+```sh
+$ cpack ./
+```
+
+or build with make
+
+```sh
+$ make
+```
+
+### Makeshot usage
+
+Most basic usage
+
+```sh
+$ makeshot /tmp/screenshot.jpg
+```
+
+Use ```--help``` to learn additional options
+
+### Screenshot lib usage
 
 ```c++
+#include <iostream>
+#include "screenshot.h"
+
 Display *display;
 Window root;
 int width = 0;
