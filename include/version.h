@@ -3,6 +3,6 @@
 #include <string>
 using namespace std;
 
-#define VERSION "17.08.15.1"
+#define VERSION "17.08.15.1" /** Shortcut to program version */
 
 #endif
