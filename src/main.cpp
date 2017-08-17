@@ -1,18 +1,8 @@
 #include <iostream>
 #include <cstdlib>
-#include <stdlib.h>
-#include <cstdio>
-#include <typeinfo>
-#include <iomanip>
-#include <algorithm>
-#include <cctype>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/X.h>
-#include <png.h>
-#include <zlib.h>
-#include <jpeglib.h>
-#include <sys/stat.h>
 #include "screenshot.h"
 #include "cmdopts.h"
 using namespace std;
