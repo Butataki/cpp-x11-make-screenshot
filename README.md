@@ -4,15 +4,22 @@ Includes library to e in project and standalone executable
 
 ### Makeshot installation
 
+Install dev packages required, for example on ubuntu
+
+```
+$ sudo apt install libjpeg-dev libpng-dev libx11-dev
+```
+
 Build DAB package and install
 
 ```sh
 $ cpack ./
 ```
 
-or build with make
+or build with cmake
 
 ```sh
+$ cmake ./
 $ make
 ```
 
