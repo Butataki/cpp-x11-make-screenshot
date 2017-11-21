@@ -2,7 +2,6 @@
 #define CMDOPTS_H_INCLUDED_
 #include <string>
 #include <vector>
-using namespace std;
 
 /** @struct cmd_options
     @brief store options from command line arguments
@@ -24,7 +23,7 @@ struct cmd_options {
     @param raw command line argument
     @return vectror of strings length of 2 where first is argument name and second it value
 */
-vector<string> process_opt_equal_sign(string arg);
+std::vector<std::string> process_opt_equal_sign(std::string arg);
 
 /** @fn bool check_opt(string short_name, string long_name, string target)
     @brief check option short and long name agains target string
@@ -33,7 +32,7 @@ vector<string> process_opt_equal_sign(string arg);
     @param string target - value to check against names
     @return true if target is eather long name ot short name, false otherwise
 */
-bool check_opt(string short_name, string long_name, string target);
+bool check_opt(std::string short_name, std::string long_name, std::string target);
 
 /** @fn cmd_options process_options(int argc, char ** argv)
     @brief Iterate over argv and process options

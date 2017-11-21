@@ -5,7 +5,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/X.h>
-using namespace std;
 
 /** @class X11Screenshot
     @brief A class for screenshots
@@ -22,7 +21,7 @@ class X11Screenshot {
         @param new_height integer - change initial image height to new value, default is 0 - no resize
         @param scale_type string - type of interpolation for scaling, available "linear" and "bilinear", default is "linear"
         */
-        X11Screenshot(XImage * image, int new_width=0, int new_height=0, string scale_type="linear");
+        X11Screenshot(XImage * image, int new_width=0, int new_height=0, std::string scale_type="linear");
         /**
         Public method to save image to png file
         @param path a constant character pointer - path where to create png image
@@ -62,13 +61,13 @@ class X11Screenshot {
         A private vector of unsigned characters vectors image_data
         Contains rgb values of an image
         */
-        vector<vector<unsigned char>> image_data = vector<vector<unsigned char>>();
+        std::vector<std::vector<unsigned char>> image_data = std::vector<std::vector<unsigned char>>();
         /**
         A private method to process XImage pixels to rgb bytes as is
         @param image an XImage pointer - image to process to rgb char vector
         @return vector of unsigned characters vectors - representing rgb values line by line
         */
-        vector<vector<unsigned char>> process_original(XImage * image);
+        std::vector<std::vector<unsigned char>> process_original(XImage * image);
         /**
         A private method to process XImage pixels to rgb bytes with
         scale procesed by a lineral function (f(x) =  ax + b)
@@ -77,7 +76,7 @@ class X11Screenshot {
         @param new_height a integer - scale to this max height
         @return vector of unsigned characters vectors - representing rgb values line by line
         */
-        vector<vector<unsigned char>> process_scale_linear(XImage * image, int new_width=0, int new_height=0);
+        std::vector<std::vector<unsigned char>> process_scale_linear(XImage * image, int new_width=0, int new_height=0);
         /**
         A private method to process XImage pixels to rgb bytes with
         scale procesed by a bilineral function (f(x, y) = a0 + a1x + a2y + a3xy)
@@ -86,7 +85,7 @@ class X11Screenshot {
         @param new_height a integer - scale to this max height
         @return vector of unsigned characters vectors - representing rgb values line by line
         */
-        vector<vector<unsigned char>> process_scale_bilinear(XImage * image, int new_width=0, int new_height=0);
+        std::vector<std::vector<unsigned char>> process_scale_bilinear(XImage * image, int new_width=0, int new_height=0);
 };
 
 #endif

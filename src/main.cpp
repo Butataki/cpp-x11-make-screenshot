@@ -5,7 +5,6 @@
 #include <X11/X.h>
 #include "screenshot.h"
 #include "cmdopts.h"
-using namespace std;
 
 // main() is where program execution begins.
 
@@ -19,18 +18,18 @@ int main(int argc, char ** argv) {
     // options
     cmd_options opts = process_options(argc, argv);
     if (opts.verbose) {
-        cout << "Options" << endl;
-        cout << "width: " << opts.width << endl;
-        cout << "Height: " << opts.height << endl;
-        cout << "Quality: " << opts.quality << endl;
-        cout << "Verbose: " << opts.verbose << endl;
-        cout << "Path: " << opts.path << endl;
-        cout << "Type: " << opts.type << endl;
+        std::cout << "Options" << std::endl;
+        std::cout << "width: " << opts.width << std::endl;
+        std::cout << "Height: " << opts.height << std::endl;
+        std::cout << "Quality: " << opts.quality << std::endl;
+        std::cout << "Verbose: " << opts.verbose << std::endl;
+        std::cout << "Path: " << opts.path << std::endl;
+        std::cout << "Type: " << opts.type << std::endl;
     }
 
     display = XOpenDisplay(NULL);
     if (display == NULL) {
-        cerr << "No display can be aquired" << endl;
+        std::cerr << "No display can be aquired" << std::endl;
         exit(1);
     }
     root = DefaultRootWindow(display);
@@ -40,8 +39,8 @@ int main(int argc, char ** argv) {
     height = gwa.height;
 
     if (opts.verbose) {
-        cout << "Original screen width: " << width << endl;
-        cout << "Original screen height: " << height << endl;
+        std::cout << "Original screen width: " << width << std::endl;
+        std::cout << "Original screen height: " << height << std::endl;
     }
 
     XImage * image = XGetImage(
@@ -55,30 +54,30 @@ int main(int argc, char ** argv) {
         ZPixmap
     );
 
-    if (string(opts.path).length() == 0) {
-        cerr << "Invalid arguments, use --help to see details." << endl;
+    if (std::string(opts.path).length() == 0) {
+        std::cerr << "Invalid arguments, use --help to see details." << std::endl;
         exit(0);
     };
 
     if ((opts.width != 0 and opts.width != width) and (opts.height != 0 and opts.height != height)) {
         screenshot = X11Screenshot(image, opts.width, opts.height, "bilinear");
-        if (opts.verbose) cout << "Process with resizing" << endl;
+        if (opts.verbose) std::cout << "Process with resizing" << std::endl;
     } else {
         screenshot = X11Screenshot(image);
-        if (opts.verbose) cout << "Process without resizing" << endl;
+        if (opts.verbose) std::cout << "Process without resizing" << std::endl;
     }
 
-    if (string(opts.type) == "png") {
-        if (opts.verbose) cout << "Saving as png" << endl;
+    if (std::string(opts.type) == "png") {
+        if (opts.verbose) std::cout << "Saving as png" << std::endl;
         if (screenshot.save_to_png(opts.path)) {
-            if (opts.verbose) cout << "Succesfully saved to " << opts.path << endl;
+            if (opts.verbose) std::cout << "Succesfully saved to " << opts.path << std::endl;
         }
     }
 
-    if (string(opts.type) == "jpg") {
-        if (opts.verbose) cout << "Saving as jpg" << endl;
+    if (std::string(opts.type) == "jpg") {
+        if (opts.verbose) std::cout << "Saving as jpg" << std::endl;
         if (screenshot.save_to_jpeg(opts.path, opts.quality)) {
-            if (opts.verbose) cout << "Succesfully saved to " << opts.path << endl;
+            if (opts.verbose) std::cout << "Succesfully saved to " << opts.path << std::endl;
         }
     }
 

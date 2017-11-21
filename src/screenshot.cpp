@@ -4,11 +4,10 @@
 #include <jpeglib.h>
 #include <stdexcept>
 #include "screenshot.h"
-using namespace std;
 
 X11Screenshot::X11Screenshot() {};
 
-X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, string scale_type) {
+X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, std::string scale_type) {
     this->width = image->width;
     this->height = image->height;
     if ((new_width == 0 && new_height == 0) ||(new_width == this->width && new_height == this->height))
@@ -18,12 +17,12 @@ X11Screenshot::X11Screenshot(XImage * image, int new_width, int new_height, stri
     else if (scale_type == "bilinear")
         this->image_data = this->process_scale_bilinear(image, new_width, new_height);
     else
-        throw invalid_argument("Invalid initialisation parameters.");
+        throw std::invalid_argument("Invalid initialisation parameters.");
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
-    vector<vector<unsigned char>> image_data;
-    vector<unsigned char> image_data_row;
+std::vector<std::vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
+    std::vector<std::vector<unsigned char>> image_data;
+    std::vector<unsigned char> image_data_row;
     unsigned long red_mask = image->red_mask;
     unsigned long green_mask = image->green_mask;
     unsigned long blue_mask = image->blue_mask;
@@ -47,9 +46,9 @@ vector<vector<unsigned char>> X11Screenshot::process_original(XImage * image) {
     return image_data;
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_scale_linear(XImage * image, int new_width, int new_height){
-    vector<vector<unsigned char>> image_data;
-    vector<unsigned char> image_data_row;
+std::vector<std::vector<unsigned char>> X11Screenshot::process_scale_linear(XImage * image, int new_width, int new_height){
+    std::vector<std::vector<unsigned char>> image_data;
+    std::vector<unsigned char> image_data_row;
     unsigned long red_mask = image->red_mask;
     unsigned long green_mask = image->green_mask;
     unsigned long blue_mask = image->blue_mask;
@@ -77,9 +76,9 @@ vector<vector<unsigned char>> X11Screenshot::process_scale_linear(XImage * image
     return image_data;
 };
 
-vector<vector<unsigned char>> X11Screenshot::process_scale_bilinear(XImage * image, int new_width, int new_height){
-    vector<vector<unsigned char>> image_data;
-    vector<unsigned char> image_data_row;
+std::vector<std::vector<unsigned char>> X11Screenshot::process_scale_bilinear(XImage * image, int new_width, int new_height){
+    std::vector<std::vector<unsigned char>> image_data;
+    std::vector<unsigned char> image_data_row;
     float x_ratio = ((float) (this->width))/new_width;
     float y_ratio = ((float) (this->height))/new_height;
     unsigned long red_mask = image->red_mask;
@@ -144,7 +143,7 @@ bool X11Screenshot::save_to_png(const char * path) {
 
     fp = fopen(path, "wb");
     if (!fp) {
-        cout << "Failed to create file " << path << endl;
+        std::cout << "Failed to create file " << path << std::endl;
         return false;
     }
 
@@ -155,7 +154,7 @@ bool X11Screenshot::save_to_png(const char * path) {
         NULL
     );
     if (!png_ptr) {
-        cout << "Failed to create PNG write structure" << endl;
+        std::cout << "Failed to create PNG write structure" << std::endl;
         fclose(fp);
         return false;
     }
@@ -163,7 +162,7 @@ bool X11Screenshot::save_to_png(const char * path) {
     info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr)
     {
-        cout << "Failed to create PNG info structure" << endl;
+        std::cout << "Failed to create PNG info structure" << std::endl;
         fclose(fp);
         png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
         return false;
@@ -195,7 +194,7 @@ bool X11Screenshot::save_to_png(const char * path) {
     png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);
     // write info header
     png_write_info(png_ptr, info_ptr);
-    for(std::vector<vector<unsigned char>>::size_type i = 0; i != this->image_data.size(); i++) {
+    for(std::vector<std::vector<unsigned char>>::size_type i = 0; i != this->image_data.size(); i++) {
         // build character row from array of characters
         row = (png_bytep) reinterpret_cast<unsigned char*>(this->image_data[i].data());
         // write byterow
@@ -219,7 +218,7 @@ bool X11Screenshot::save_to_jpeg(const char * path, int quality){
 
     fp = fopen(path, "wb");
     if (!fp) {
-        cout << "Failed to create file " << path << endl;
+        std::cout << "Failed to create file " << path << std::endl;
         return false;
     }
     cinfo.err = jpeg_std_error(&jerr);
@@ -232,7 +231,7 @@ bool X11Screenshot::save_to_jpeg(const char * path, int quality){
     jpeg_set_defaults(&cinfo);
     jpeg_set_quality (&cinfo, quality, true);
     jpeg_start_compress(&cinfo, true);
-    for(std::vector<vector<unsigned char>>::size_type i = 0; i != this->image_data.size(); i++) {
+    for(std::vector<std::vector<unsigned char>>::size_type i = 0; i != this->image_data.size(); i++) {
         row = (JSAMPARRAY) &this->image_data[i];
         jpeg_write_scanlines(&cinfo, row, 1);
     }
